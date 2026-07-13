@@ -7,6 +7,13 @@ import { AuthShell } from "./AuthShell";
 import { Button, Field, Input } from "../../components/ui";
 import { useAuth } from "../../context/AuthContext";
 
+// The public demo workspace, supplied at build time so no credential is ever
+// committed to this repo. Unset in a fork or a local checkout, in which case the
+// demo button simply does not render. Never point these at a real person's account.
+const DEMO_EMAIL = import.meta.env.VITE_DEMO_EMAIL;
+const DEMO_PASSWORD = import.meta.env.VITE_DEMO_PASSWORD;
+const demoEnabled = Boolean(DEMO_EMAIL && DEMO_PASSWORD);
+
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -33,10 +40,12 @@ export default function Login() {
     }
   };
 
-  // Convenience: pre-fill the seeded demo credentials.
+  // A visitor arriving from the portfolio has no account and nothing to type.
+  // Sign them straight into the shared read-only-ish demo workspace.
   const useDemo = () => {
-    setValue("email", "divyanshdixit2001@gmail.com");
-    setValue("password", "Test@1234");
+    setValue("email", DEMO_EMAIL);
+    setValue("password", DEMO_PASSWORD);
+    handleSubmit(onSubmit)();
   };
 
   return (
@@ -76,12 +85,21 @@ export default function Login() {
         </Button>
       </form>
 
-      {/* <button
-        onClick={useDemo}
-        className="mt-3 w-full rounded-full border border-dashed border-brand-300 py-2.5 text-sm font-medium text-brand-700 transition hover:bg-brand-50"
-      >
-        Try the demo account
-      </button> */}
+      {demoEnabled && (
+        <>
+          <button
+            type="button"
+            onClick={useDemo}
+            disabled={submitting}
+            className="mt-3 w-full rounded-full border border-dashed border-brand-300 py-2.5 text-sm font-medium text-brand-700 transition hover:bg-brand-50 disabled:opacity-60"
+          >
+            Explore the demo workspace
+          </button>
+          <p className="mt-2 text-center text-xs text-ink-soft">
+            Signs you into a shared workspace with sample pipeline data. No signup needed.
+          </p>
+        </>
+      )}
 
       <p className="mt-6 text-center text-sm text-ink-soft">
         Don't have an account?{" "}
