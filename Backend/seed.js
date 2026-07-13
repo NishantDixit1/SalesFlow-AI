@@ -9,8 +9,15 @@ import { Contact } from "./models/Contact.js";
 import { Note } from "./models/Note.js";
 import { Task } from "./models/Task.js";
 
-const USER_EMAIL = "divyanshdixit2001@gmail.com";
-const USER_PASSWORD = "Test@1234";
+// Supplied at run time so no credential lives in this repo. Point these at the
+// demo workspace account, never at a real person's login.
+const USER_EMAIL = process.env.SEED_EMAIL;
+const USER_PASSWORD = process.env.SEED_PASSWORD;
+
+if (!USER_EMAIL || !USER_PASSWORD) {
+    console.error("Set SEED_EMAIL and SEED_PASSWORD before seeding.");
+    process.exit(1);
+}
 
 const seed = async () => {
   try {
